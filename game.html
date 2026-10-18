@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Game - Profile Tấn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(135deg, #B8E0D2 0%, #D5ECC2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: 'Nunito', sans-serif;
+    }
+    canvas {
+      display: block;
+      border: 4px solid #52A375;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #FAF3E0 0%, #D5ECC2 100%);
+      box-shadow: 0 20px 40px rgba(93, 78, 55, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let score = 0;
+    let isGameOver = false;
+    let currentInfo = 'Dùng phím mũi tên trái/phải để hứng vật phẩm khám phá về Tấn!';
+    let particles = [];
+
+    const profileData = [
+      'Tên: Phạm Quốc Tấn',
+      'Tuổi: 15 (Sinh ngày 15/04/2012)',
+      'Sở thích: Ăn, Ngủ, Tin học',
+      'Email: phamtan1541983@gmail.com',
+      'SĐT: 0396.651.755',
+      'Chứng nhận: Giải nhất Tin học trẻ KV Miền Bắc (Bảng D2)',
+      'Chứng nhận: Giải Khuyến khích QG Olympic Việt Nam',
+      'Chứng nhận: Giải nhất nấu ăn cấp trường THCS Ngô Quyền',
+      'Trường học: THCS Ngô Quyền',
+      'Ước mơ: Vào được THPT Lê Hồng Phong',
+      'Project 1: Hệ thống điểm danh nhận diện khuôn mặt',
+      'Project 2: Game Mario bảo vệ môi trường',
+      'Project 3: Website cá nhân này',
+      'Nhược điểm 1: NGU Tiếng Anh',
+      'Nhược điểm 2: Overthinking (OVRTK)',
+      'Nhược điểm 3: Mệt là Than thở'
+    ];
+
+    const player = {
+      x: 270,
+      y: 345,
+      width: 70,
+      height: 24,
+      speed: 8,
+      dx: 0,
+      color: '#52A375', // Xanh sage đồng bộ web
+      accent: '#7BC9A0'
+    };
+
+    let item = {
+      x: Math.random() * 560,
+      y: 0,
+      width: 24,
+      height: 24,
+      speed: 3,
+      color: '#FF8FAB', // Hồng đào cute
+      glow: '#FFCDB2'
+    };
+
+    const clouds = Array.from({ length: 4 }, (_, i) => ({
+      x: 60 + i * 140,
+      y: 40 + (i % 2) * 30,
+      r: 16 + (i % 2) * 8,
+      speed: 0.25 + i * 0.05
+    }));
+
+    function createBurst(x, y, color) {
+      for (let i = 0; i < 10; i++) {
+        particles.push({
+          x,
+          y,
+          vx: (Math.random() - 0.5) * 3.5,
+          vy: (Math.random() - 0.5) * 3.5,
+          life: 30 + Math.random() * 15,
+          radius: 2 + Math.random() * 3,
+          color
+        });
+      }
+    }
+
+    function drawRoundedRect(x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + w - radius, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+      ctx.lineTo(x + w, y + h - radius);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+      ctx.lineTo(x + radius, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') player.dx = -player.speed;
+      if (e.key === 'ArrowRight') player.dx = player.speed;
+      if (e.key === ' ' && isGameOver) resetGame();
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') player.dx = 0;
+    });
+
+    function resetGame() {
+      score = 0;
+      isGameOver = false;
+      currentInfo = 'Hãy hứng vật phẩm để khám phá về Tấn!';
+      item.y = 0;
+      item.x = Math.random() * (canvas.width - item.width);
+      item.speed = 3;
+      item.color = '#FF8FAB';
+      item.glow = '#FFCDB2';
+      particles = [];
+    }
+
+    function update() {
+      if (isGameOver) return;
+
+      player.x += player.dx;
+      if (player.x < 0) player.x = 0;
+      if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+
+      clouds.forEach((cloud) => {
+        cloud.x += cloud.speed;
+        if (cloud.x > canvas.width + 50) cloud.x = -60;
+      });
+
+      item.y += item.speed;
+
+      if (
+        item.y + item.height >= player.y &&
+        item.x + item.width >= player.x &&
+        item.x <= player.x + player.width
+      ) {
+        score++;
+        const randomIndex = Math.floor(Math.random() * profileData.length);
+        currentInfo = profileData[randomIndex];
+        createBurst(item.x + item.width / 2, item.y + item.height / 2, item.color);
+        item.y = 0;
+        item.x = Math.random() * (canvas.width - item.width);
+        item.speed = Math.min(7.5, item.speed + 0.2);
+        item.color = ['#FF8FAB', '#7BC9A0', '#FFCDB2', '#FFF3B0', '#E5C1CD'][Math.floor(Math.random() * 5)];
+        item.glow = '#ffffff';
+      }
+
+      if (item.y > canvas.height) {
+        isGameOver = true;
+      }
+
+      particles = particles.filter((p) => p.life > 0);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 1;
+      });
+    }
+
+    function drawBackground() {
+      // Nền kem chuyển sắc dịu nhẹ đúng tông web chính
+      const bg = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      bg.addColorStop(0, '#FAF3E0');
+      bg.addColorStop(1, '#D5ECC2');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Mây trắng mềm mại
+      clouds.forEach((cloud) => {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.beginPath();
+        ctx.arc(cloud.x, cloud.y, cloud.r, 0, Math.PI * 2);
+        ctx.arc(cloud.x + 18, cloud.y - 4, cloud.r + 3, 0, Math.PI * 2);
+        ctx.arc(cloud.x + 36, cloud.y, cloud.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Thảm cỏ nền dưới đáy
+      ctx.fillStyle = '#B8E0D2';
+      ctx.fillRect(0, 370, canvas.width, 30);
+    }
+
+    function drawPlayer() {
+      ctx.save();
+      ctx.shadowColor = 'rgba(82, 163, 117, 0.4)';
+      ctx.shadowBlur = 12;
+      drawRoundedRect(player.x, player.y, player.width, player.height, 12);
+      ctx.fillStyle = player.color;
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = player.accent;
+      drawRoundedRect(player.x + 8, player.y + 5, player.width - 16, 7, 4);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawItem() {
+      ctx.save();
+      ctx.shadowColor = item.glow;
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(item.x + item.width / 2, item.y + item.height / 2, item.width / 2, 0, Math.PI * 2);
+      ctx.fillStyle = item.color;
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = '#5D4E37';
+      ctx.font = 'bold 12px Nunito';
+      ctx.textAlign = 'center';
+      ctx.fillText('★', item.x + item.width / 2, item.y + item.height / 2 + 4);
+      ctx.textAlign = 'left';
+    }
+
+    function drawParticles() {
+      particles.forEach((p) => {
+        ctx.beginPath();
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, p.life / 45);
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    function drawHud() {
+      // Khung điểm số góc trái
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      drawRoundedRect(16, 16, 120, 36, 12);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(93, 78, 55, 0.15)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#5D4E37';
+      ctx.font = 'bold 16px Nunito';
+      ctx.fillText('Score: ' + score, 30, 39);
+
+      // Khung hiển thị thông tin profile ở trên
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      drawRoundedRect(16, 60, canvas.width - 32, 48, 14);
+      ctx.fill();
+      ctx.strokeStyle = '#7BC9A0';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#5D4E37';
+      ctx.font = 'bold 13px Nunito';
+      ctx.textAlign = 'center';
+      ctx.fillText(currentInfo, canvas.width / 2, 90);
+      ctx.textAlign = 'left';
+    }
+
+    function drawGameOver() {
+      ctx.fillStyle = 'rgba(93, 78, 55, 0.4)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#FAF3E0';
+      drawRoundedRect(110, 110, 380, 160, 20);
+      ctx.fill();
+      ctx.strokeStyle = '#7BC9A0';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.fillStyle = '#5D4E37';
+      ctx.font = 'bold 26px Nunito';
+      ctx.textAlign = 'center';
+      ctx.fillText('Kết Thúc Trò Chơi!', canvas.width / 2, 160);
+
+      ctx.font = 'bold 16px Nunito';
+      ctx.fillText('Tổng điểm: ' + score, canvas.width / 2, 195);
+      
+      ctx.fillStyle = '#52A375';
+      ctx.font = 'bold 14px Nunito';
+      ctx.fillText('Nhấn phím Space để chơi lại', canvas.width / 2, 235);
+      ctx.textAlign = 'left';
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawBackground();
+
+      if (!isGameOver) {
+        drawPlayer();
+        drawItem();
+        drawParticles();
+        drawHud();
+      } else {
+        drawGameOver();
+      }
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script>
+</body>
+</html>

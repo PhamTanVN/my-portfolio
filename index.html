@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phạm Quốc Tấn — Personal Website</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2395D5B2'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle' fill='%235D4E37' font-family='Nunito,Arial,sans-serif'%3EPT%3C/text%3E%3C/svg%3E" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --bg-sky: #B8E0D2;
+      --bg-grass: #D5ECC2;
+      --bg-cream: #FAF3E0;
+      --text-primary: #5D4E37;
+      --text-secondary: #7A6B5A;
+      --text-muted: #9B8B7A;
+      --accent-mint: #7BC9A0;
+      --accent-sage: #52A375;
+      --accent-peach: #FFCDB2;
+      --accent-pink: #FF8FAB;
+      --accent-lavender: #E5C1CD;
+      --accent-butter: #FFF3B0;
+      --border: rgba(93, 78, 55, 0.15);
+      --card-bg: rgba(255, 255, 255, 0.85);
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(180deg,
+        #B8E0D2 0%, #B8E0D2 20%,
+        #C7E6CA 20%, #C7E6CA 40%,
+        #D5ECC2 40%, #D5ECC2 60%,
+        #E8F0D1 60%, #E8F0D1 80%,
+        #FAF3E0 80%, #FAF3E0 100%
+      );
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Khung nhúng game Flappy Bird ở Hero */
+    .github-game-wrapper {
+      width: 100%;
+      max-width: 440px;
+      height: 560px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 4px solid var(--accent-mint);
+      background: #000;
+      margin: 0 auto;
+    }
+    .github-game-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Khung nhúng game.html Profile Tấn ở chính giữa trang */
+    .center-profile-game-section {
+      padding: 4rem 3rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .center-game-wrapper {
+      width: 100%;
+      max-width: 620px;
+      height: 420px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 4px solid rgba(123, 201, 160, 0.9);
+      background: linear-gradient(180deg, #dff9ef 0%, #bfe8d3 100%);
+      box-shadow: 0 20px 60px rgba(17, 45, 31, 0.25);
+      margin: 0 auto;
+    }
+    .center-game-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Khung nhúng world.html (Tan's Campus) */
+    .world-section {
+      position: relative;
+      padding: 4rem 3rem 2rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .world-frame-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 4px solid var(--accent-mint);
+      background: #73c29b;
+      aspect-ratio: 16 / 10;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    }
+    .world-frame-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1.25rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 3px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--accent-sage);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover {
+      color: var(--accent-sage);
+    }
+    .nav-cta {
+      padding: 0.6rem 1.25rem;
+      background: var(--accent-mint);
+      border-radius: 100px;
+      color: var(--text-primary) !important;
+      font-weight: 700;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .nav-cta:hover {
+      background: var(--accent-sage);
+      color: #fff !important;
+    }
+    .content {
+      position: relative;
+      z-index: 10;
+    }
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 8rem 3rem 4rem;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      border: 3px solid var(--accent-mint);
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+    .hero-badge .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-sage);
+      border-radius: 50%;
+    }
+    .eyebrow {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .hero h1 {
+      font-size: clamp(3rem, 6vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+      color: var(--text-primary);
+    }
+    .hero h1 .ac-text {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      color: var(--accent-pink);
+    }
+    .hero-description {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin-bottom: 1rem;
+    }
+    .hero-description.tagline {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .tag {
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      border: 3px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+    }
+    .btn {
+      padding: 0.875rem 1.75rem;
+      border-radius: 100px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .btn-primary {
+      background: var(--accent-mint);
+      color: var(--text-primary);
+      border: 3px solid var(--accent-sage);
+    }
+    .btn-primary:hover {
+      background: var(--accent-sage);
+      color: #fff;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.9);
+      border: 3px solid var(--border);
+      color: var(--text-primary);
+    }
+    .btn-secondary:hover {
+      background: white;
+      border-color: var(--accent-mint);
+    }
+    .stats-bar {
+      display: flex;
+      gap: 4rem;
+      padding: 2rem 0;
+      margin-top: 2rem;
+    }
+    .stat-value {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 0.5rem;
+      font-weight: 600;
+    }
+    section {
+      position: relative;
+      padding: 6rem 3rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      background: linear-gradient(180deg,
+        #D5ECC2 0%, #D5ECC2 25%,
+        #E0EECB 25%, #E0EECB 50%,
+        #EBF0D4 50%, #EBF0D4 75%,
+        #FAF3E0 75%, #FAF3E0 100%
+      );
+    }
+    .section-header {
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent-sage);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+    }
+    .card-grid {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      padding: 1rem 2rem 2rem;
+    }
+    .card-3d {
+      background: var(--card-bg);
+      border: 3px solid var(--border);
+      border-radius: 24px;
+      padding: 2rem;
+      min-width: 340px;
+      max-width: 380px;
+      flex-shrink: 0;
+    }
+    .card-3d .icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--accent-mint) 0%, var(--accent-sage) 100%);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+    }
+    .card-3d h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .card-3d p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    .card-tags {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .card-tag {
+      padding: 0.35rem 0.75rem;
+      background: var(--bg-grass);
+      border-radius: 100px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .card-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .card-actions .btn {
+      padding: 0.6rem 1.25rem;
+      font-size: 0.85rem;
+    }
+    .roadmap-list {
+      list-style: none;
+    }
+    .roadmap-list li {
+      display: grid;
+      grid-template-columns: 5rem 1fr;
+      gap: 1.5rem;
+      align-items: baseline;
+      padding: 1.25rem 1rem;
+      border-bottom: 2px solid var(--border);
+    }
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-sage);
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .about-image img {
+      width: 100%;
+      border-radius: 24px;
+      border: 4px solid var(--accent-mint);
+      object-fit: cover;
+      aspect-ratio: 3/4;
+    }
+    .about-content h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+    }
+    .about-content p {
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      line-height: 1.8;
+    }
+    .about-content .highlight {
+      color: var(--accent-sage);
+      font-weight: 700;
+    }
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 2rem;
+    }
+    .skill-tag {
+      padding: 0.6rem 1.2rem;
+      background: #FFB6C1;
+      border: 3px solid #FF8FAB;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .skill-tag:hover {
+      background: #FF8FAB;
+      color: #fff;
+    }
+    .connect-section {
+      text-align: center;
+      padding: 8rem 3rem;
+    }
+    .connect-section h2 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: var(--accent-sage);
+    }
+    .connect-section p {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .social-link {
+      width: 56px;
+      height: 56px;
+      background: var(--card-bg);
+      border: 3px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .social-link:hover {
+      background: var(--accent-mint);
+      border-color: var(--accent-sage);
+    }
+    .social-link svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--text-secondary);
+      transition: fill 0.2s ease;
+    }
+    .social-link:hover svg {
+      fill: var(--text-primary);
+    }
+    footer {
+      padding: 2rem 3rem;
+      border-top: 3px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1280px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.5);
+    }
+    footer p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    footer a:hover {
+      color: var(--accent-sage);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="logo">Phạm Quốc Tấn</a>
+      <ul class="nav-links">
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#roadmap">Timeline</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact" class="nav-cta">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+  <!-- BẢN NHẠC NỀN 1.MP3 (LOOP) -->
+  <audio id="bgMusic" src="1.mp3" loop preload="auto"></audio>
+
+  <!-- Nút điều khiển âm thanh nhỏ góc trái màn hình (phòng trường hợp trình duyệt chặn tự động phát) -->
+  <div id="musicToggle" onclick="toggleMusic()" style="position: fixed; bottom: 20px; left: 20px; z-index: 999; background: rgba(255,255,255,0.9); border: 2px solid var(--accent-mint); padding: 8px 14px; border-radius: 50px; cursor: pointer; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 6px;">
+    🎵 <span id="musicStatus">Bật nhạc nền</span>
+  </div>
+
+  <script>
+    const music = document.getElementById('bgMusic');
+    const musicStatus = document.getElementById('musicStatus');
+    let isPlaying = false;
+
+    // Tự động phát nhạc khi người dùng tương tác lần đầu với trang web (click hoặc nhấn phím)
+    function playAudioOnInteraction() {
+      music.play().then(() => {
+        isPlaying = true;
+        musicStatus.textContent = "Tắt nhạc nền";
+        window.removeEventListener('click', playAudioOnInteraction);
+        window.removeEventListener('keydown', playAudioOnInteraction);
+      }).catch(error => {
+        console.log("Trình duyệt chặn autoplay, vui lòng bấm nút góc màn hình.");
+      });
+    }
+
+    window.addEventListener('click', playAudioOnInteraction);
+    window.addEventListener('keydown', playAudioOnInteraction);
+
+    // Hàm bấm vào nút góc màn hình để Bật/Tắt nhạc thủ công
+    function toggleMusic() {
+      if (isPlaying) {
+        music.pause();
+        isPlaying = false;
+        musicStatus.textContent = "Bật nhạc nền";
+      } else {
+        music.play();
+        isPlaying = true;
+        musicStatus.textContent = "Tắt nhạc nền";
+      }
+    }
+  </script>
+  <div class="content">
+    <section class="hero">
+      <div class="row align-items-center g-5 w-100 mx-auto d-flex flex-lg-row flex-column justify-content-between align-items-center" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 2rem;">
+        
+        <!-- Cột trái: Thông tin cá nhân -->
+        <div style="flex: 1; min-width: 300px;" class="hero-content">
+          <div class="hero-badge">
+            <span class="dot"></span>
+            Luôn sẵn sàng học hỏi & phát triển bản thân
+          </div>
+          <p class="eyebrow">Xin chào, mình là</p>
+          <h1>
+            <span class="line"><span class="ac-text">Phạm Quốc Tấn</span></span>
+          </h1>
+          <p class="hero-description tagline">Mình biến ý tưởng thành hiện thực thông qua tư duy sản phẩm và kể chuyện.</p>
+          <p class="hero-description">Hi! Mình là học sinh trường THCS Ngô Quyền, đam mê sáng tạo nội dung, marketing, công nghệ và phát triển sản phẩm phần mềm!</p>
+          
+          <div class="hero-tags">
+            <span class="tag">15 tuổi</span>
+            <span class="tag">THCS Ngô Quyền</span>
+            <span class="tag">TP. Hải Phòng</span>
+          </div>
+
+          <div class="hero-ctas">
+            <a href="#projects" class="btn btn-primary">
+              View Projects
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+          </div>
+
+          <div class="stats-bar">
+            <div class="stat-item">
+              <span class="stat-value">4</span>
+              <span class="stat-label">Dự án</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">ISTJ</span>
+              <span class="stat-label">MBTI</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">2020</span>
+              <span class="stat-label">Năm bắt đầu hành trình</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột phải: Game Flappy Bird -->
+        <div style="flex: 0 0 auto;" class="text-center">
+          <div class="github-game-wrapper">
+            <iframe src="https://nebez.github.io/floppybird/" title="Flappy Bird GitHub" loading="lazy"></iframe>
+          </div>
+          <p class="text-center small mt-2" style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.85rem; font-weight: 600;">Nhấn Space hoặc Click để chơi trực tiếp</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MINI GAME HỨNG VẬT PHẨM PROFILE -->
+    <section class="center-profile-game-section">
+      <div class="section-header">
+        <p class="section-label">// Interactive Mini Game</p>
+        <h2 class="section-title">Khám phá về Tấn qua Mini Game</h2>
+      </div>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem;">Sử dụng phím mũi tên trái/phải để hứng vật phẩm và tìm hiểu thông tin ngẫu nhiên!</p>
+      <div class="center-game-wrapper">
+        <iframe src="game.html" loading="lazy" title="Mini Game - Profile Tấn"></iframe>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="about-grid">
+        <div class="about-image">
+          <img src="./1.gif" alt="Phạm Quốc Tấn" loading="lazy" decoding="async">
+        </div>
+        <div class="about-content">
+          <p class="section-label">// About Me</p>
+          <h2>Rất vui được gặp bạn</h2>
+          <p>Mình theo học tại trường THCS Ngô Quyền thuộc đội tuyển Tin học, Hóa học, đam mê xây dựng các sản phẩm giao thoa giữa sáng tạo, công nghệ và nghệ thuật kể chuyện.</p>
+          <p>Sinh ra và lớn lên tại TP. Hải Phòng, Việt Nam. Mình bắt đầu hành trình sáng tạo sản phẩm và xây dựng dự án từ rất sớm, luôn hướng tới các sản phẩm mang lại giá trị thực tế.</p>
+          
+          <div class="skills-list">
+            <span class="skill-tag">HTML5</span>
+            <span class="skill-tag">GameMaker</span>
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">CSS3</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KHU VỰC NHÚNG WORLD.HTML (TAN'S CAMPUS) -->
+    <section id="world" class="world-section">
+      <div class="section-header">
+        <p class="section-label">//Khám phá thế giới dễ thương của Tấn tòn ton</p>
+        <h2 class="section-title">Tan's Campus</h2>
+      </div>
+      <p class="section-subtitle" style="color: var(--text-secondary); margin-bottom: 2rem;">Khu vực tương tác trực quan với các nhà Bản thân, Chứng nhận, Nhược điểm, Ước mơ.</p>
+      <div class="world-frame-wrapper">
+        <iframe src="world.html" loading="lazy" title="Tan's Campus"></iframe>
+      </div>
+      <p class="world-hint" style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Click chuột để di chuyển &middot; Lại gần nhà rồi nhấn Space để xem thông tin</p>
+    </section>
+
+    <section id="projects">
+      <div class="section-header">
+        <p class="section-label">// Những dự án mình đã thực hiện</p>
+        <h2 class="section-title">Projects</h2>
+      </div>
+      <div class="card-grid">
+        <div class="card-3d">
+          <div class="icon">🎮</div>
+          <h3>Mario Game</h3>
+          <p>Trò chơi platformer được phát triển bằng GameMaker.</p>
+          <div class="card-tags">
+            <span class="card-tag">GameMaker</span>
+            <span class="card-tag">Dự án đầu tiên đem đi thi</span>
+          </div>
+          <div class="card-actions">
+            <a href="https://drive.google.com/drive/u/0/folders/16JUzM-3hRSchzXDU9CTjfdFD5IKsWLsX" class="btn btn-primary" target="_blank">Mã nguồn</a>
+            <a href="2.html" class="btn btn-secondary" target="_blank">Chi tiết dự án</a>
+          </div>
+        </div>
+        <div class="card-3d">
+          <div class="icon">👁️</div>
+          <h3>Hệ thống điểm danh nhận diện khuôn mặt</h3>
+          <p>Một hệ thống điểm danh tự động sử dụng công nghệ nhận diện khuôn mặt để xác thực danh tính.</p>
+          <div class="card-tags">
+            <span class="card-tag">Python</span>
+            <span class="card-tag">Google AI</span>
+          </div>
+          <div class="card-actions">
+            <a href="https://drive.google.com/drive/u/0/folders/18SRBvfhqzSrowLXl9tJQ6LndE5hDtQ-f" class="btn btn-primary" target="_blank">Mã nguồn</a>
+            <a href="1.html" class="btn btn-secondary" target="_blank">Chi tiết dự án</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="roadmap">
+      <div class="section-header">
+        <p class="section-label">// Kế hoạch phát triển</p>
+        <h2 class="section-title">Timeline</h2>
+      </div>
+      <div class="card-3d" style="max-width: 100%;">
+        <ul class="roadmap-list">
+          <li>
+            <span class="badge">2018</span>
+            <span>Bắt đầu thích thú Tin Học qua các tiếng bíp của mainboard</span>
+          </li>
+          <li>
+            <span class="badge">2020</span>
+            <span>Tự học và làm ra sản phầm đầu tiên dự thi THT được giải 3</span>
+          </li>
+          <li>
+            <span class="badge">2024</span>
+            <span>Đăng ký trung tâm Mindx gặp gỡ thầy cô, bạn bè</span>
+          </li>
+          <li>
+            <span class="badge">Bây giờ</span>
+            <span>Thục hiện dự án lớn: Hệ thống điểm danh nhận diện khuôn mặt đạt giải nhất THT</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="contact" class="connect-section">
+      <h2>Let's Connect</h2>
+      <p>Quan tâm đến việc hợp tác hoặc đơn giản là muốn trò chuyện?</p>
+      
+      <div class="social-links">
+        <!-- Zalo Icon -->
+        <a href="https://zalo.me/0876342688" class="social-link" target="_blank" aria-label="Zalo">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M19.5 2h-15C3.12 2 2 3.12 2 4.5v15C2 20.88 3.12 22 4.5 22h15c1.38 0 2.5-1.12 2.5-2.5v-15C22 3.12 20.88 2 19.5 2zM9 13.5h-2v-3h2v3zm4 0h-2v-3h2v3zm4 0h-2v-3h2v3zm-8-4h-2V7h2v2.5zm4 0h-2V7h2v2.5zm4 0h-2V7h2v2.5z"/>
+          </svg>
+        </a>
+        <!-- Facebook Icon -->
+        <a href="https://www.facebook.com/tan.pham.987463" class="social-link" target="_blank" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <!-- Email Icon -->
+        <a href="mailto:phamtan1541983@gmail.com" class="social-link" target="_blank" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2026 Phạm Quốc Tấn</p>
+      <a href="#home">Đầu trang ↑</a>
+    </footer>
+  </div>
+  
+</body>
+</html>

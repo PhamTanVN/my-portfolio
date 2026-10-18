@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Mario — Chi Tiết Dự Án</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2395D5B2'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle' fill='%235D4E37' font-family='Nunito,Arial,sans-serif'%3EPT%3C/text%3E%3C/svg%3E" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --bg-sky: #B8E0D2;
+      --bg-grass: #D5ECC2;
+      --bg-cream: #FAF3E0;
+      --text-primary: #5D4E37;
+      --text-secondary: #7A6B5A;
+      --text-muted: #9B8B7A;
+      --accent-mint: #7BC9A0;
+      --accent-sage: #52A375;
+      --accent-peach: #FFCDB2;
+      --accent-pink: #FF8FAB;
+      --border: rgba(93, 78, 55, 0.15);
+      --card-bg: rgba(255, 255, 255, 0.85);
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(180deg,
+        #B8E0D2 0%, #B8E0D2 20%,
+        #C7E6CA 20%, #C7E6CA 40%,
+        #D5ECC2 40%, #D5ECC2 60%,
+        #E8F0D1 60%, #E8F0D1 80%,
+        #FAF3E0 80%, #FAF3E0 100%
+      );
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Thanh điều hướng y hệt trang chủ */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1.25rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 3px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--accent-sage);
+      text-decoration: none;
+    }
+    .back-btn {
+      padding: 0.5rem 1.25rem;
+      background: var(--accent-mint);
+      border-radius: 100px;
+      color: var(--text-primary) !important;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .back-btn:hover {
+      background: var(--accent-sage);
+      color: #fff !important;
+    }
+
+    /* Phần nội dung chính toàn trang */
+    .project-main {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 9rem 3rem 6rem;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent-sage);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 1rem;
+    }
+    .project-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+      color: var(--text-primary);
+    }
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .tag {
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      border: 3px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .project-description {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 800px;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+    }
+
+    /* Khung lưới chứa Ảnh và Video toàn trang */
+    .media-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+    }
+    @media (min-width: 900px) {
+      .media-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .card-3d {
+      background: var(--card-bg);
+      border: 3px solid var(--border);
+      border-radius: 24px;
+      padding: 2rem;
+    }
+    .card-3d h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      color: var(--text-primary);
+    }
+    .media-frame {
+      width: 100%;
+      height: 320px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+      border: 3px solid var(--border);
+    }
+    .media-frame img,
+    .media-frame iframe,
+    .media-frame video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: none;
+      display: block;
+    }
+
+    .project-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.875rem 1.75rem;
+      border-radius: 100px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .btn-primary {
+      background: var(--accent-mint);
+      color: var(--text-primary);
+      border: 3px solid var(--accent-sage);
+    }
+    .btn-primary:hover {
+      background: var(--accent-sage);
+      color: #fff;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.9);
+      border: 3px solid var(--border);
+      color: var(--text-primary);
+    }
+    .btn-secondary:hover {
+      background: white;
+      border-color: var(--accent-mint);
+    }
+
+    footer {
+      padding: 2rem 3rem;
+      border-top: 3px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1280px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.5);
+    }
+    footer p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    footer a:hover {
+      color: var(--accent-sage);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Thanh Navbar -->
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="logo">Phạm Quốc Tấn</a>
+      <a href="index.html" class="back-btn">← Quay lại trang chủ</a>
+    </div>
+  </nav>
+
+  <!-- Nội dung toàn trang Project -->
+  <div class="project-main">
+    <p class="section-label">// Featured Project</p>
+    <h1 class="project-title">Game Mario — Bảo Vệ Môi Trường</h1>
+
+    <div class="project-tags">
+      <span class="tag">GameMaker</span>
+      <span class="tag">Dự an đầu tiên</span>
+      <span class="tag">Game</span>
+    </div>
+
+    <p class="project-description">
+      Đây là dự án game đầu tiên mình làm, được phát triển trên nền tảng GameMaker. Trong game, người chơi sẽ điều khiển nhân vật Mario để hứng các vật phẩm liên quan đến môi trường và tránh các chướng ngại vật. Mục tiêu của trò chơi là nâng cao nhận thức về bảo vệ môi trường thông qua trải nghiệm giải trí. Game có đồ họa đơn giản nhưng vui nhộn, âm thanh sống động và cơ chế chơi dễ hiểu, phù hợp với mọi lứa tuổi.
+    </p>
+
+    <!-- Khung lưới Ảnh & Video -->
+    <div class="media-grid">
+      <!-- Khung ảnh minh họa -->
+      <div class="card-3d">
+        <h3>Ảnh Minh Họa Giao Diện</h3>
+        <div class="media-frame">
+          <img src="Ảnh chụp màn hình 2026-08-09 090205.png" alt="Game Mario Interface">
+        </div>
+      </div>
+
+      <!-- Khung video trực quan -->
+      <div class="card-3d">
+        <h3>Video Demo Trực Quan</h3>
+        <div class="media-frame">
+          <iframe src="https://www.youtube.com/embed/xif6ENxH7tA" title="Game Mario Demo" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nút liên kết ngoài -->
+    <div class="project-actions">
+      <a href="https://drive.google.com/drive/folders/16JUzM-3hRSchzXDU9CTjfdFD5IKsWLsX" class="btn btn-primary" target="_blank">Mã nguồn</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 Phạm Quốc Tấn</p>
+    <a href="#">Back to top ↑</a>
+  </footer>
+
+</body>
+</html>

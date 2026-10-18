@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tan's Campus - Cute Profile World</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      background: #73c29b;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Nunito', sans-serif;
+    }
+    .world-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #73c29b;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+    canvas {
+      display: block;
+      background: #73c29b;
+    }
+    .world-ui {
+      position: absolute;
+      bottom: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px 20px;
+      border-radius: 20px;
+      color: #5D4E37;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      pointer-events: none;
+      border: 2px solid #7BC9A0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="world-container">
+    <canvas id="worldCanvas"></canvas>
+    <div class="world-ui">✨ Click chuột để di chuyển &middot; Lại gần nhà (Bản thân, Chứng nhận, Nhược điểm, Ước mơ) rồi bấm Space ✨</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('worldCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Tải hình ảnh nhân vật nvc.png
+    const playerImg = new Image();
+    playerImg.src = 'nvc.png';
+    let imgLoaded = false;
+    playerImg.onload = () => {
+      imgLoaded = true;
+    };
+
+    const houseData = {
+      "BẢN THÂN": [
+        "Tên: Phạm Quốc Tấn",
+        "Tuổi: 15 (Sinh ngày 15/04/2012)",
+        "Sở thích: Ăn, Ngủ, Tin học",
+        "Email: phamtan1541983@gmail.com",
+        "SĐT: 0396.651.755",
+        "Trường học: THCS Ngô Quyền"
+      ],
+      "CHỨNG NHẬN": [
+        "Giải nhất Tin học trẻ KV Miền Bắc (Bảng D2)",
+        "Giải Khuyến khích QG Olympic Việt Nam",
+        "Giải nhất nấu ăn cấp trường THCS Ngô Quyền"
+      ],
+      "NHƯỢC ĐIỂM": [
+        "Nhược điểm 1: NGU Tiếng Anh",
+        "Nhược điểm 2: Overthinking (OVRTK)",
+        "Nhược điểm 3: Mệt là Than thở"
+      ],
+      "ƯỚC MƠ": [
+        "Ước mơ lớn nhất: Vào được trường cấp 3 THPT Lê Hồng Phong",
+        "Dự án 1: Hệ thống điểm danh nhận diện khuôn mặt",
+        "Dự án 2: Game Mario bảo vệ môi trường",
+        "Dự án 3: Website cá nhân này"
+      ]
+    };
+
+    let currentInfo = "Chào mừng bạn đến với Campus dễ thương của Tấn! Hãy khám phá 4 ngôi nhà nhé!";
+
+    let player = {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      targetX: canvas.width / 2,
+      targetY: canvas.height / 2,
+      size: 24, // Kích thước hiển thị ảnh nhân vật
+      speed: 0.08
+    };
+
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      player.targetX = e.clientX - rect.left;
+      player.targetY = e.clientY - rect.top;
+    });
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      player.targetX = e.clientX - rect.left;
+      player.targetY = e.clientY - rect.top;
+      checkInteraction();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.key === ' ') {
+        checkInteraction();
+        e.preventDefault();
+      }
+    });
+
+    function getBuildings() {
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      return [
+        { x: cx - 320, y: cy - 180, w: 170, h: 110, name: 'BẢN THÂN', color: '#ffeaec', roof: '#ff8fab' },
+        { x: cx + 120, y: cy - 180, w: 170, h: 110, name: 'CHỨNG NHẬN', color: '#fff3b0', roof: '#feca57' },
+        { x: cx - 320, y: cy + 60, w: 170, h: 110, name: 'NHƯỢC ĐIỂM', color: '#e8d5b7', roof: '#b86256' },
+        { x: cx + 120, y: cy + 60, w: 170, h: 110, name: 'ƯỚC MƠ', color: '#d2f7f4', roof: '#48dbfb' }
+      ];
+    }
+
+    function checkInteraction() {
+      const buildings = getBuildings();
+      let interacted = false;
+
+      buildings.forEach(b => {
+        const centerX = b.x + b.w / 2;
+        const centerY = b.y + b.h / 2;
+        const dist = Math.hypot(player.x - centerX, player.y - centerY);
+
+        if (dist < 140) {
+          const listInfo = houseData[b.name];
+          const randomIndex = Math.floor(Math.random() * listInfo.length);
+          currentInfo = `[Nhà ${b.name}] ${listInfo[randomIndex]}`;
+          interacted = true;
+        }
+      });
+
+      if (!interacted) {
+        currentInfo = "Hãy di chuyển lại gần nhà Bản thân, Chứng nhận, Nhược điểm hoặc Ước mơ rồi bấm Space!";
+      }
+    }
+
+    function update() {
+      player.x += (player.targetX - player.x) * player.speed;
+      player.y += (player.targetY - player.y) * player.speed;
+
+      player.x = Math.max(50, Math.min(canvas.width - 50, player.x));
+      player.y = Math.max(50, Math.min(canvas.height - 50, player.y));
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Nền cỏ
+      ctx.fillStyle = '#73c29b';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = '#64af8b';
+      ctx.lineWidth = 1;
+      const gridSize = 40;
+      for (let x = 0; x < canvas.width; x += gridSize) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += gridSize) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      // Đường đi màu cát
+      ctx.fillStyle = '#dfcfb0';
+      ctx.fillRect(cx - 340, cy - 25, 680, 50);
+      ctx.fillRect(cx - 25, cy - 200, 50, 400);
+
+      // Vẽ 4 ngôi nhà
+      const buildings = getBuildings();
+      buildings.forEach(b => {
+        const centerX = b.x + b.w / 2;
+        const centerY = b.y + b.h / 2;
+        const dist = Math.hypot(player.x - centerX, player.y - centerY);
+        const isNear = dist < 140;
+
+        // Đổ bóng
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.fillRect(b.x + 8, b.y + 8, b.w, b.h);
+
+        // Thân nhà
+        ctx.fillStyle = b.color;
+        ctx.beginPath();
+        ctx.roundRect(b.x, b.y, b.w, b.h, 12);
+        ctx.fill();
+        ctx.strokeStyle = '#5D4E37';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Mái nhà
+        ctx.fillStyle = b.roof;
+        ctx.beginPath();
+        ctx.roundRect(b.x - 10, b.y - 22, b.w + 20, 28, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        // Cửa ra vào
+        ctx.fillStyle = '#5D4E37';
+        ctx.fillRect(b.x + b.w / 2 - 16, b.y + b.h - 32, 32, 32);
+
+        // Bảng tên nhà
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(b.x + 15, b.y + 25, b.w - 30, 28, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#5D4E37';
+        ctx.font = 'bold 12px "Nunito", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(b.name, b.x + b.w / 2, b.y + 43);
+
+        if (isNear) {
+          ctx.fillStyle = '#52A375';
+          ctx.beginPath();
+          ctx.roundRect(b.x + b.w / 2 - 50, b.y - 58, 100, 26, 8);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 12px "Nunito", sans-serif';
+          ctx.fillText('Nhấn [ SPACE ]', b.x + b.w / 2, b.y - 41);
+        }
+      });
+
+      // Vẽ nhân vật bằng ảnh nvc.png
+      if (imgLoaded) {
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,0.3)';
+        ctx.shadowBlur = 10;
+        // Vẽ hình ảnh nvc.png căn giữa tại tọa độ player.x, player.y
+        const imgSize = player.size * 2;
+        ctx.drawImage(playerImg, player.x - player.size, player.y - player.size, imgSize, imgSize);
+        ctx.restore();
+      } else {
+        // Fallback nếu ảnh chưa tải kịp
+        ctx.fillStyle = '#FF8FAB';
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#5D4E37';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+
+      // Bảng thông tin HUD ở trên
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+      ctx.beginPath();
+      ctx.roundRect(canvas.width / 2 - 350, 20, 700, 52, 16);
+      ctx.fill();
+      ctx.strokeStyle = '#7BC9A0';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.fillStyle = '#5D4E37';
+      ctx.font = 'bold 14px "Nunito", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(currentInfo, canvas.width / 2, 53);
+      ctx.textAlign = 'left';
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script>
+</body>
+</html>
